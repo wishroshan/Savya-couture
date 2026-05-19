@@ -252,11 +252,10 @@
     <div id="toast" class="toast">📋 Review copied! Just LONG-PRESS & PASTE it on Google.</div>
 
     <script>
-        // Matrix featuring your complete collection of provided reviews and structural pieces
         const reviewFragments = {
             lehenga: {
                 intros: [
-                    "I visited Savya Couture for my wedding and reception shopping, and we were completely blown away.",
+                    "I visited Savya Couture for my sister’s wedding and reception shopping, and we were completely blown away.",
                     "Found my absolute dream wedding outfit here!",
                     "If you are looking for uncommon and elegant bridal wear, this is the place to go.",
                     "Savya Couture has a phenomenal bridal collection.",
@@ -268,7 +267,7 @@
                     "The bridal lehenga designs are incredibly stunning and unique compared to what you usually see around Chandni Chowk.",
                     "The embroidery and detailing on my lehenga are gorgeous. The intricate Zardosi and traditional detailing on raw silk was absolutely breathtaking.",
                     "Their collection stands out completely. The handiwork, especially the Gota Patti and fine threadwork, is incredibly stunning.",
-                    "I was was so confused about my reception look, but the staff guided us beautifully and showed us some really unique pieces.",
+                    "My sister was so confused about her reception look, but the staff guided us beautifully and showed us some really unique pieces.",
                     "They feature a beautiful mix of traditional Indian craftsmanship and contemporary designs."
                 ],
                 pricing: [
@@ -377,7 +376,7 @@
                 outros: [
                     "Savya Couture made my wedding shopping a breeze. From the beautiful outfit options to the perfect fitting and friendly staff, everything was 10/10.",
                     "Will definitely be recommending them to all my friends! Outstanding customer service and premium fashion.",
-                    "This is definitely my preferred boutique in Delhi from now on. Excellent experience from start to finish. Highly recommend!"
+                    "This has easily become my go-to boutique in Delhi for elegant luxury wear. Excellent experience from start to finish. Highly recommend!"
                 ]
             }
         };
@@ -389,7 +388,6 @@
         const actionBtn = document.getElementById('action-btn');
         const toast = document.getElementById('toast');
         
-        // Target Google Maps URL for reviews
         const GOOGLE_REVIEW_URL = "https://search.google.com/local/writereview?placeid=ChIJV6CGGf39DDkRy6V7WjFmGEo"; 
         
         let currentCategory = "";
@@ -438,22 +436,30 @@
             }
         });
 
-        actionBtn.addEventListener('click', async () => {
+        // FIXED: Pure user-triggered navigation logic that completely bypasses the iOS/Safari Popup Blocker
+        actionBtn.addEventListener('click', () => {
             const textToCopy = reviewTextArea.value;
 
-            try {
-                await navigator.clipboard.writeText(textToCopy);
-                showToast();
-            } catch (err) {
-                reviewTextArea.select();
-                document.execCommand("copy");
-                showToast();
-            }
+            // 1. CRITICAL FOR iOS: Immediately open the window inside the physical click block thread.
+            // Do NOT put this inside an async or a setTimeout block, otherwise Safari freezes it.
+            const newWindow = window.open(GOOGLE_REVIEW_URL, '_blank');
 
-            setTimeout(() => {
-                window.open(GOOGLE_REVIEW_URL, '_blank');
-            }, 1000); // 1 second delay so the customer can read the layout message before switching tabs
+            // 2. Execute clipboard processes directly after handling the screen assignment
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(textToCopy)
+                    .then(() => showToast())
+                    .catch(() => fallbackCopy(textToCopy));
+            } else {
+                fallbackCopy(textToCopy);
+            }
         });
+
+        function fallbackCopy(text) {
+            reviewTextArea.select();
+            reviewTextArea.setSelectionRange(0, 99999); // Safe scope check for older iOS targets
+            document.execCommand("copy");
+            showToast();
+        }
 
         function showToast() {
             toast.className = "toast show";
