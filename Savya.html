@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Review Savya Couture</title>
+    <style>
+        /* Luxury Fashion Palette (Burgundy & Champagne Gold) */
+        :root {
+            --bg-color: #3d0c11;       /* Deep Luxury Burgundy */
+            --card-bg: #52151b;         /* Lighter Burgundy for Cards */
+            --card-border: #8c6d3d;     /* Muted Gold */
+            --accent-gold: #e5c158;     /* Bright Champagne Gold */
+            --accent-rose: #f3e5f5;     /* Soft Rose Accent */
+            --text-main: #ffffff;
+            --text-box-bg: #fffdf9;     /* Ivory White for text boxes */
+            --text-box-color: #2b080b;  /* Dark Wine color for text */
+        }
+
+        /* Base & Mobile-First Styles */
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: 'Georgia', 'Times New Roman', serif; /* Elegant serif font for fashion */
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            max-width: 600px;
+        }
+
+        h1 {
+            color: var(--accent-gold);
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            line-height: 1.3;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        p.subtitle {
+            font-size: 0.95rem;
+            font-family: sans-serif;
+            color: #dcd1c4;
+            margin-top: 0;
+        }
+
+        /* Category Grid Layout */
+        .category-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .category-btn {
+            background-color: var(--card-bg);
+            border: 1.5px solid var(--card-border);
+            border-radius: 8px;
+            padding: 18px 15px;
+            color: var(--text-main);
+            font-family: inherit;
+            font-size: 1.1rem;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Active and Hover States */
+        .category-btn:hover, .category-btn:focus {
+            border-color: var(--accent-gold);
+            box-shadow: 0 0 12px rgba(229, 193, 88, 0.3);
+            outline: none;
+        }
+
+        .category-btn.active {
+            background-color: rgba(229, 193, 88, 0.15);
+            border-color: var(--accent-gold);
+            box-shadow: 0 0 15px rgba(229, 193, 88, 0.4);
+        }
+
+        /* Preview Section */
+        .preview-section {
+            display: none;
+            width: 100%;
+            max-width: 600px;
+            margin-top: 30px;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .preview-section h2 {
+            font-size: 1.1rem;
+            font-family: sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            color: var(--accent-gold);
+        }
+
+        textarea {
+            width: 100%;
+            height: 150px;
+            background-color: var(--text-box-bg);
+            color: var(--text-box-color);
+            border: none;
+            border-radius: 6px;
+            padding: 15px;
+            font-size: 0.95rem;
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.5;
+            box-sizing: border-box;
+            resize: none;
+            margin-bottom: 20px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.15);
+        }
+
+        /* Button Grouping */
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .secondary-btn {
+            background-color: transparent;
+            color: var(--accent-gold);
+            border: 1.5px solid var(--accent-gold);
+            border-radius: 8px;
+            padding: 14px 20px;
+            font-size: 0.95rem;
+            font-family: sans-serif;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .secondary-btn:active {
+            transform: scale(0.98);
+        }
+
+        .secondary-btn:hover {
+            background-color: rgba(229, 193, 88, 0.1);
+        }
+
+        .action-btn {
+            background: linear-gradient(135deg, var(--accent-gold), #bba047);
+            color: var(--bg-color);
+            font-size: 1.1rem;
+            font-family: sans-serif;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border: none;
+            border-radius: 8px;
+            padding: 18px 20px;
+            width: 100%;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(229, 193, 88, 0.3);
+            transition: transform 0.1s ease;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .action-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* Toast Notification */
+        .toast {
+            visibility: hidden;
+            min-width: 280px;
+            background-color: #fffdf9;
+            color: #2b080b;
+            font-family: sans-serif;
+            font-weight: bold;
+            text-align: center;
+            border-radius: 8px;
+            padding: 16px;
+            position: fixed;
+            z-index: 1000;
+            bottom: 30px;
+            font-size: 0.95rem;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.5);
+            opacity: 0;
+            transition: opacity 0.3s, bottom 0.3s, visibility 0.3s;
+        }
+
+        .toast.show {
+            visibility: visible;
+            opacity: 1;
+            bottom: 50px;
+        }
+
+        @media (min-width: 768px) {
+            .category-container {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+            }
+            .category-btn:last-child {
+                grid-column: span 2;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Thank you for shopping at<br>Savya Couture</h1>
+        <p class="subtitle">Select the outfit category you purchased to share your beautiful experience.</p>
+    </header>
+
+    <!-- Category Selector -->
+    <div class="category-container" id="category-container">
+        <button class="category-btn" data-category="lehenga">👑 Bridal Lehengas & Trousseaus</button>
+        <button class="category-btn" data-category="saree">✨ Heavy Sarees & Luxury Suits</button>
+        <button class="category-btn" data-category="gown">💃 Designer Gowns & Indo-Western</button>
+        <button class="category-btn" data-category="custom">🪡 Customization & Bespoke Fitting</button>
+        <button class="category-btn" data-category="boutique">🛍️ Collection & Store Experience</button>
+    </div>
+
+    <!-- Review Preview & Action -->
+    <div class="preview-section" id="preview-section">
+        <h2>Your Generated Review:</h2>
+        <textarea id="review-text" readonly></textarea>
+        
+        <div class="button-group">
+            <button class="secondary-btn" id="regenerate-btn">✨ Auto-Generate New Review</button>
+            <button class="action-btn" id="action-btn">Copy Review & Open Google Maps</button>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">📋 Review copied! Just LONG-PRESS & PASTE it on Google.</div>
+
+    <script>
+        // Matrix featuring your complete collection of provided reviews and structural pieces
+        const reviewFragments = {
+            lehenga: {
+                intros: [
+                    "I visited Savya Couture for my wedding and reception shopping, and we were completely blown away.",
+                    "Found my absolute dream wedding outfit here!",
+                    "If you are looking for uncommon and elegant bridal wear, this is the place to go.",
+                    "Savya Couture has a phenomenal bridal collection.",
+                    "A hidden gem in Chandni Chowk for bridal shopping. Their designs are fresh, modern, yet deeply rooted in tradition.",
+                    "Bought my dream bridal lehenga from Savya Couture in Chandni Chowk!",
+                    "Fabulous collection of wedding trousseaus and heavy festive wear."
+                ],
+                details: [
+                    "The bridal lehenga designs are incredibly stunning and unique compared to what you usually see around Chandni Chowk.",
+                    "The embroidery and detailing on my lehenga are gorgeous. The intricate Zardosi and traditional detailing on raw silk was absolutely breathtaking.",
+                    "Their collection stands out completely. The handiwork, especially the Gota Patti and fine threadwork, is incredibly stunning.",
+                    "I was was so confused about my reception look, but the staff guided us beautifully and showed us some really unique pieces.",
+                    "They feature a beautiful mix of traditional Indian craftsmanship and contemporary designs."
+                ],
+                pricing: [
+                    "The quality of the fabric felt premium, and the pricing was perfectly justified for the heavy work. Highly recommend!",
+                    "The prices are very fair considering the high-end look and heavy craftsmanship of the garments.",
+                    "The pricing is very reasonable compared to the overpriced designer stores nearby, and the quality is just as good, if not better.",
+                    "The fabric feels luxurious and comfortable to wear. Definitely a 5-star experience.",
+                    "Highly recommend checking them out if you want luxury outfits that don't compromise on elegance."
+                ],
+                outros: [
+                    "Thank you so much for making my day special! Highly recommend!",
+                    "The fabric quality is superb, and the staff made sure the fitting was absolutely flawless. Super satisfied with my purchase!",
+                    "Loved my wedding outfit so much, it was absolutely pretty! Thank you!",
+                    "Highly recommend Savya Couture for bridal and party wear. Very satisfied with their collection and prices."
+                ]
+            },
+            saree: {
+                intros: [
+                    "Purchased a few heavy work sarees and festive Anarkalis from here.",
+                    "Savya Couture has an amazing premium collection of ethnic suits and luxury sarees.",
+                    "Visited their boutique at Nai Sarak, Chandni Chowk for premium ethnic wear.",
+                    "Beautiful designs, premium fabric quality, and very humble staff. A must-visit store in Nai Sarak."
+                ],
+                details: [
+                    "The quality of the georgette and silk fabrics they use is absolutely top-notch.",
+                    "The embroidery and delicate Zari work look exceptionally premium and royal.",
+                    "Extremely happy with the quality of the borders and fabric used in my lehenga. It looks rich and elegant.",
+                    "The collection is very good and the quality is superb. Will definitely visit again for family functions."
+                ],
+                pricing: [
+                    "They gave me a clear breakdown of pricing upfront with zero hidden margins.",
+                    "Very reasonable pricing for the level of heavy embroidery they offer. The designs aren't repetitive like other shops.",
+                    "Beautiful collection with a very balanced price-to-quality ratio."
+                ],
+                outros: [
+                    "Will definitely shop here again for future festivals!",
+                    "This has easily become my go-to boutique in Delhi for elegant luxury wear.",
+                    "Got so many compliments on my outfit! A wonderful experience overall."
+                ]
+            },
+            gown: {
+                intros: [
+                    "An amazing experience from start to finish. I bought both my engagement gown and wedding lehenga from Savya Couture.",
+                    "Found the most stunning customized gown here for my engagement.",
+                    "Great variety of Indo-western outfits and designer contemporary silhouettes.",
+                    "Savya Couture is the best place in Chandni Chowk for unique western-ethnic fusion wear."
+                ],
+                details: [
+                    "The fabric quality here is superb. My reception gown fits perfectly and feels so comfortable to move around in.",
+                    "The craftsmanship is very neat. The flow, layout, and finish of the modern cuts were absolutely flawless.",
+                    "The touch of traditional artistry on a contemporary silhouette makes their pieces so unique."
+                ],
+                pricing: [
+                    "The styling looks like it is from a high-end runway but at a much better price point.",
+                    "Very competitive rates for custom designer gowns in Delhi.",
+                    "The pricing is very fair considering the high-end look and heavy craftsmanship."
+                ],
+                outros: [
+                    "Outstanding custom work! Perfect style and fit.",
+                    "If you want to look unique and modern, do not look anywhere else.",
+                    "Highly recommended for modern Indian festive outfits!"
+                ]
+            },
+            custom: {
+                intros: [
+                    "I am genuinely impressed by the custom tailoring services at Savya Couture.",
+                    "They designed my outfit from scratch based on a sample layout I liked.",
+                    "Wanted a bespoke outfit and the team here turned my vision into reality beautifully."
+                ],
+                details: [
+                    "Superb quality and excellent fitting. The team at Savya Couture ensured that all my alterations were done perfectly before delivery.",
+                    "They pay great attention to detail. The finishing of the clothes is neat, the fabric is durable, and the overall drape of the outfit is beautiful.",
+                    "The material used is top tier. I was worried about the weight of the bridal lehenga, but the fabric quality made it very manageable and comfortable to wear."
+                ],
+                pricing: [
+                    "Very honest and transparent pricing for completely bespoke, tailor-made outfits.",
+                    "They honor your budget limitations and offer excellent material options.",
+                    "Just make sure to order a bit in advance for the wedding season rush! Brilliant craft."
+                ],
+                outros: [
+                    "Superb execution on custom fitting. Very professional.",
+                    "Hands down the best custom styling team on Nai Sarak Road.",
+                    "They make sure you leave the store completely satisfied with your outfit and fitting."
+                ]
+            },
+            boutique: {
+                intros: [
+                    "I had an absolutely wonderful shopping experience at Savya Couture.",
+                    "Finding a trustworthy bridal boutique in Chandni Chowk can be tough, but this place exceeds all expectations.",
+                    "The boutique is extremely organized, well-managed, and conveniently located near Town Hall.",
+                    "Came here on a recommendation and it was totally worth it. The designs are very uncommon and beautiful.",
+                    "An absolute delight shopping here. Exceptional collection, outstanding fabric quality, and reasonable prices."
+                ],
+                details: [
+                    "All the staff members are very friendly and polite. They showed us so many options with a smile on their faces, making our bridal shopping experience completely stress-free.",
+                    "Great customer service! They listen to your preferences carefully and suggest designs that match your vision.",
+                    "The hospitality here is amazing. Shopping for a wedding can be chaotic, but the staff handled us with so much patience and care.",
+                    "Courteous staff, beautiful ambience, and an extensive collection. They helped me find the perfect outfit for my brother’s wedding in no time."
+                ],
+                pricing: [
+                    "What I loved most about Savya Couture is that their prices completely match the quality of the garment. You genuinely feel like you've gotten your money's worth.",
+                    "Wedding shopping can be so stressful and expensive, but Savya Couture made it easy. They have a fantastic range of budgets without compromising on quality.",
+                    "Value for money at its best. The bridal outfits here look incredibly expensive but are priced very practically.",
+                    "The staff doesn't push you to buy the most expensive item, they actually help you find what suits you best."
+                ],
+                outros: [
+                    "Savya Couture made my wedding shopping a breeze. From the beautiful outfit options to the perfect fitting and friendly staff, everything was 10/10.",
+                    "Will definitely be recommending them to all my friends! Outstanding customer service and premium fashion.",
+                    "This is definitely my preferred boutique in Delhi from now on. Excellent experience from start to finish. Highly recommend!"
+                ]
+            }
+        };
+
+        const categoryButtons = document.querySelectorAll('.category-btn');
+        const previewSection = document.getElementById('preview-section');
+        const reviewTextArea = document.getElementById('review-text');
+        const regenerateBtn = document.getElementById('regenerate-btn');
+        const actionBtn = document.getElementById('action-btn');
+        const toast = document.getElementById('toast');
+        
+        // Target Google Maps URL for reviews
+        const GOOGLE_REVIEW_URL = "https://search.google.com/local/writereview?placeid=ChIJV6CGGf39DDkRy6V7WjFmGEo"; 
+        
+        let currentCategory = "";
+        const getRandom = (arr) => arr[Math.floor(Math.random() * arr.length)];
+
+        function generateDynamicReview(category) {
+            const fragments = reviewFragments[category];
+            let newReview = reviewTextArea.value;
+            
+            let attempts = 0;
+            while (newReview === reviewTextArea.value && attempts < 15) {
+                const intro = getRandom(fragments.intros);
+                const detail = getRandom(fragments.details);
+                const pricing = getRandom(fragments.pricing);
+                const outro = getRandom(fragments.outros);
+                
+                newReview = `${intro} ${detail} ${pricing} ${outro}`;
+                attempts++;
+            }
+            
+            reviewTextArea.value = newReview;
+        }
+
+        categoryButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                categoryButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+
+                currentCategory = button.getAttribute('data-category');
+                reviewTextArea.value = ""; 
+                
+                generateDynamicReview(currentCategory);
+
+                previewSection.style.display = 'block';
+                previewSection.scrollIntoView({ behavior: 'smooth', block: 'end' });
+            });
+        });
+
+        regenerateBtn.addEventListener('click', () => {
+            if (currentCategory) {
+                reviewTextArea.style.opacity = 0.4;
+                setTimeout(() => {
+                    generateDynamicReview(currentCategory);
+                    reviewTextArea.style.opacity = 1;
+                }, 150);
+            }
+        });
+
+        actionBtn.addEventListener('click', async () => {
+            const textToCopy = reviewTextArea.value;
+
+            try {
+                await navigator.clipboard.writeText(textToCopy);
+                showToast();
+            } catch (err) {
+                reviewTextArea.select();
+                document.execCommand("copy");
+                showToast();
+            }
+
+            setTimeout(() => {
+                window.open(GOOGLE_REVIEW_URL, '_blank');
+            }, 1000); // 1 second delay so the customer can read the layout message before switching tabs
+        });
+
+        function showToast() {
+            toast.className = "toast show";
+            setTimeout(function(){ 
+                toast.className = toast.className.replace("show", ""); 
+            }, 4000);
+        }
+    </script>
+</body>
+</html>
