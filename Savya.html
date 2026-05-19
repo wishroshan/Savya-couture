@@ -21,7 +21,7 @@
         body {
             margin: 0;
             padding: 20px;
-            font-family: 'Georgia', 'Times New Roman', serif; /* Elegant serif font for fashion */
+            font-family: 'Georgia', 'Times New Roman', serif;
             background-color: var(--bg-color);
             color: var(--text-main);
             display: flex;
@@ -78,7 +78,6 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* Active and Hover States */
         .category-btn:hover, .category-btn:focus {
             border-color: var(--accent-gold);
             box-shadow: 0 0 12px rgba(229, 193, 88, 0.3);
@@ -131,7 +130,7 @@
             box-shadow: inset 0 2px 4px rgba(0,0,0,0.15);
         }
 
-        /* Button Grouping */
+        /* Dynamic Step Layout Container */
         .button-group {
             display: flex;
             flex-direction: column;
@@ -154,12 +153,20 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        .secondary-btn:active {
-            transform: scale(0.98);
-        }
-
         .secondary-btn:hover {
             background-color: rgba(229, 193, 88, 0.1);
+        }
+
+        /* Split iOS Step Layout UI styling */
+        .ios-step-container {
+            display: none; /* Injected dynamically if iOS is found */
+            flex-direction: column;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px dashed var(--card-border);
+            margin-top: 10px;
         }
 
         .action-btn {
@@ -176,12 +183,22 @@
             width: 100%;
             cursor: pointer;
             box-shadow: 0 4px 15px rgba(229, 193, 88, 0.3);
-            transition: transform 0.1s ease;
+            transition: all 0.1s ease;
             -webkit-tap-highlight-color: transparent;
         }
 
-        .action-btn:active {
+        .action-btn:active, .secondary-btn:active {
             transform: scale(0.98);
+        }
+
+        /* Styling state variations for sequence steps */
+        .btn-step-1 {
+            background: #fffdf9;
+            color: #2b080b;
+        }
+        .btn-step-2 {
+            background: linear-gradient(135deg, var(--accent-gold), #bba047);
+            color: var(--bg-color);
         }
 
         /* Toast Notification */
@@ -244,7 +261,15 @@
         
         <div class="button-group">
             <button class="secondary-btn" id="regenerate-btn">✨ Auto-Generate New Review</button>
-            <button class="action-btn" id="action-btn">Copy Review & Open Google Maps</button>
+            
+            <!-- Standard unified button used for Android/PC systems -->
+            <button class="action-btn" id="standard-action-btn">Copy Review & Open Google Maps</button>
+            
+            <!-- Safe, decoupled sequential step template structural container for iOS -->
+            <div class="ios-step-container" id="ios-action-block">
+                <button class="action-btn btn-step-1" id="ios-copy-btn">Step 1: Copy Review Text</button>
+                <button class="action-btn btn-step-2" id="ios-open-btn">Step 2: Open Google Maps</button>
+            </div>
         </div>
     </div>
 
@@ -255,7 +280,7 @@
         const reviewFragments = {
             lehenga: {
                 intros: [
-                    "I visited Savya Couture for my wedding and reception shopping, and I was completely blown away.",
+                    "I visited Savya Couture for my wedding and reception shopping, and i was completely blown away.",
                     "Found my absolute dream wedding outfit here!",
                     "If you are looking for uncommon and elegant bridal wear, this is the place to go.",
                     "Savya Couture has a phenomenal bridal collection.",
@@ -267,7 +292,7 @@
                     "The bridal lehenga designs are incredibly stunning and unique compared to what you usually see around Chandni Chowk.",
                     "The embroidery and detailing on my lehenga are gorgeous. The intricate Zardosi and traditional detailing on raw silk was absolutely breathtaking.",
                     "Their collection stands out completely. The handiwork, especially the Gota Patti and fine threadwork, is incredibly stunning.",
-                    "I was so confused about my reception look, but the staff guided us beautifully and showed us some really unique pieces.",
+                    "I was so confused about my reception look, but the staff guided me beautifully and showed me some really unique pieces.",
                     "They feature a beautiful mix of traditional Indian craftsmanship and contemporary designs."
                 ],
                 pricing: [
@@ -385,13 +410,27 @@
         const previewSection = document.getElementById('preview-section');
         const reviewTextArea = document.getElementById('review-text');
         const regenerateBtn = document.getElementById('regenerate-btn');
-        const actionBtn = document.getElementById('action-btn');
         const toast = document.getElementById('toast');
+        
+        // Target Action Elements
+        const standardActionBtn = document.getElementById('standard-action-btn');
+        const iosActionBlock = document.getElementById('ios-action-block');
+        const iosCopyBtn = document.getElementById('ios-copy-btn');
+        const iosOpenBtn = document.getElementById('ios-open-btn');
         
         const GOOGLE_REVIEW_URL = "https://search.google.com/local/writereview?placeid=ChIJV6CGGf39DDkRy6V7WjFmGEo"; 
         
         let currentCategory = "";
         const getRandom = (arr) => arr[Math.floor(Math.random() * arr.length)];
+
+        // Core Device Evaluation Rule: Check for iPhone/iPad/Mac Safari configurations
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+        // Adjust visible navigation elements layout instantly on script initialization
+        if (isIOS) {
+            standardActionBtn.style.display = 'none';
+            iosActionBlock.style.display = 'flex';
+        }
 
         function generateDynamicReview(category) {
             const fragments = reviewFragments[category];
@@ -436,32 +475,43 @@
             }
         });
 
-        // FIXED: Pure user-triggered navigation logic that completely bypasses the iOS/Safari Popup Blocker
-        actionBtn.addEventListener('click', () => {
+        // ACTION A: Standard Handling Execution (Non-iOS Targets)
+        standardActionBtn.addEventListener('click', async () => {
             const textToCopy = reviewTextArea.value;
+            try {
+                await navigator.clipboard.writeText(textToCopy);
+                showToast("📋 Review copied! Just LONG-PRESS & PASTE it on Google.");
+            } catch (err) {
+                fallbackCopy();
+            }
+            window.open(GOOGLE_REVIEW_URL, '_blank');
+        });
 
-            // 1. CRITICAL FOR iOS: Immediately open the window inside the physical click block thread.
-            // Do NOT put this inside an async or a setTimeout block, otherwise Safari freezes it.
-            const newWindow = window.open(GOOGLE_REVIEW_URL, '_blank');
-
-            // 2. Execute clipboard processes directly after handling the screen assignment
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(textToCopy)
-                    .then(() => showToast())
-                    .catch(() => fallbackCopy(textToCopy));
-            } else {
-                fallbackCopy(textToCopy);
+        // ACTION B: iPhone Decoupled Sequential Execution Buttons
+        iosCopyBtn.addEventListener('click', async () => {
+            const textToCopy = reviewTextArea.value;
+            try {
+                await navigator.clipboard.writeText(textToCopy);
+                showToast("✅ Copied successfully! Now tap Step 2 below.");
+            } catch (err) {
+                fallbackCopy();
             }
         });
 
-        function fallbackCopy(text) {
+        iosOpenBtn.addEventListener('click', () => {
+            // Unrestricted direct target assignment bypasses popup blocking completely
+            window.open(GOOGLE_REVIEW_URL, '_blank');
+        });
+
+        function fallbackCopy() {
             reviewTextArea.select();
-            reviewTextArea.setSelectionRange(0, 99999); // Safe scope check for older iOS targets
+            reviewTextArea.setSelectionRange(0, 99999);
             document.execCommand("copy");
-            showToast();
+            showToast("✅ Copied successfully! Now tap Step 2 below.");
         }
 
-        function showToast() {
+        function showToast(message) {
+            toast.textContent = message;
             toast.className = "toast show";
             setTimeout(function(){ 
                 toast.className = toast.className.replace("show", ""); 
